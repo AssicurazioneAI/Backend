@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS,cross_origin
 #from datetime import datetime
-import keras as k
-import tensorflow as tf
+###
+# Import here the library needed for the model #
+###
 import sys
 import base64
 import numpy as np
@@ -23,7 +24,7 @@ cors = CORS(app, resources={r"/receiveImage": {"origins": "*"}})
 def receiveImage():     
 
     imgReceived = request.get_json(force=True)
-    print(imgReceived)
+    # print(imgReceived)
 
     imgdata = base64.b64decode(imgReceived['image'])
     
@@ -37,10 +38,9 @@ def getNeuralInference(image):
     pass
 
 if __name__ == '__main__':
-    session = tf.Session(graph=tf.Graph())
-    
-    with session.graph.as_default():
-        k.backend.set_session(session)                
-    
+    #####
+    ## Load here the model ##       
+    #####
+
     serverPort=sys.argv[1]
     app.run(debug = False,host='0.0.0.0',port=serverPort) 
