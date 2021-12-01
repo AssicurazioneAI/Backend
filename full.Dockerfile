@@ -6,6 +6,5 @@ RUN git clone https://github.com/facebookresearch/detectron2.git && python3 -m p
 RUN git clone https://github.com/cocodataset/cocoapi.git && cd cocoapi/PythonAPI && 2to3 . -w && python3 setup.py install 
 RUN mkdir pythonSv
 COPY ./ /pythonSv
-EXPOSE 5001
 WORKDIR /pythonSv
-ENTRYPOINT [ "python3","sv.py","5001" ]
+ENTRYPOINT [ "python3","sv.py" ]

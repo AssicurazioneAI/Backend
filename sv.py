@@ -20,7 +20,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 cors = CORS(app, resources={r"/receiveImage": {"origins": "*"}})
 
 @app.route('/recibeImagen', methods = ['POST']) 
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
+@cross_origin(origin='localhost',headers=['Content-Type'])
 def receiveImage():     
 
     imgReceived = request.get_json(force=True)
@@ -34,13 +34,16 @@ def receiveImage():
     return response
 
 def getNeuralInference(image):
-    #process the image
-    pass
+    #process the image 
+    #print(image)
+    res = [5, "door"]
+    return res
 
 if __name__ == '__main__':
     #####
     ## Load here the model ##       
     #####
-
-    serverPort=sys.argv[1]
-    app.run(debug = False,host='0.0.0.0',port=serverPort) 
+    print("Starting...")
+    #serverPort=sys.argv[1]
+    #print("Puerto ", str(serverPort))
+    app.run(debug = True,host='0.0.0.0') 
