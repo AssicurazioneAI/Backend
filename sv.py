@@ -30,13 +30,25 @@ def receiveImage():
     
     res = getNeuralInference(imgdata)
 
-    response = jsonify({'damageRank':res[0], 'part':res[1]})
+    response = jsonify(res)
     return response
 
 def getNeuralInference(image):
     #process the image 
     #print(image)
-    res = [5, "door"]
+    aux = [5, "door"]
+    res = {}    
+    data = {}    
+    data['score'] = 12.12121
+    data['bbox'] = ["374.07073974609375","143.3466033935547","167.2783203125","489.75067138671875"]
+    data['type'] = "light"
+    data['superCategory'] = "part"
+    data['imageWidth'] = 1024
+    data['imageHeight'] = 1024   
+    res['data'] = data    
+    res['errorMessage'] = "Some error happened"
+    res['responseCode'] = 200
+
     return res
 
 if __name__ == '__main__':
