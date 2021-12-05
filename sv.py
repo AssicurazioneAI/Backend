@@ -1,18 +1,25 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS,cross_origin
+import torch
+import os
+import cv2
+import skimage.io as io
+from detectron2 import model_zoo
+from detectron2.engine import DefaultPredictor
+from detectron2.config import get_cfg
 #from datetime import datetime
 ###
 # Import here the library needed for the model #
 ###
+
 import sys
 import base64
 import numpy as np
 
-faceCascade=None
-modeloKeras=None
 graph=None
 sess=None
 session=None
+cfg=None
 
 # Server Logic
 app = Flask(__name__) 
@@ -24,38 +31,60 @@ cors = CORS(app, resources={r"/receiveImage": {"origins": "*"}})
 def receiveImage():     
 
     imgReceived = request.get_json(force=True)
-    # print(imgReceived)
 
     imgdata = base64.b64decode(imgReceived['image'])
-    
-    res = getNeuralInference(imgdata)
-
+    np_data = np.fromstring(imgdata,np.uint8)
+    img = cv2.imdecode(np_data,cv2.IMREAD_UNCHANGED)
+    res = getNeuralInference(img)
     response = jsonify(res)
     return response
 
 def getNeuralInference(image):
-    #process the image 
-    #print(image)
-    aux = [5, "door"]
+    predictions = predict(image)
     res = {}    
     data = {}    
-    data['score'] = 12.12121
-    data['bbox'] = ["374.07073974609375","143.3466033935547","167.2783203125","489.75067138671875"]
-    data['type'] = "light"
+    data['type'] = []
+    for i in range(len(predictions['pred_classes'])):
+        if predictions['pred_classes'][i] == 0:
+            data['type'].append('light')
+        elif predictions['pred_classes'][i] == 1:
+            data['type'].append('medium')
+        elif predictions['pred_classes'][i] == 2:
+            data['type'].append('hard')
+    data['score'] = predictions['scores']
+    data['bbox'] = predictions['pred_boxes']
     data['superCategory'] = "part"
-    data['imageWidth'] = 1024
-    data['imageHeight'] = 1024   
+    data['imageWidth'] = 300
+    data['imageHeight'] = 300   
     res['data'] = data    
     res['errorMessage'] = "Some error happened"
     res['responseCode'] = 200
 
     return res
 
+def predict(image):
+  im = image 
+  outputs = predictor(im)
+  predictions = outputs["instances"].to("cpu").get_fields()
+  predictions['pred_boxes'] = [box.tolist() for box in predictions['pred_boxes']]
+  predictions['pred_classes'] = predictions['pred_classes'].tolist()
+  predictions['scores'] = predictions['scores'].tolist()
+  return predictions
+
 if __name__ == '__main__':
     #####
     ## Load here the model ##       
     #####
+    cfg = get_cfg()
+    cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
+    cfg.OUTPUT_DIR = "./output/"
+    cfg.DATALOADER.NUM_WORKERS = 1
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2  # only has one class (damage) + 1
+    cfg.MODEL.RETINANET.NUM_CLASSES = 2 # only has one class (damage) + 1
+    cfg.MODEL.DEVICE = 'cpu'
+    cfg.MODEL.WEIGHTS = "./output/model_final.pth"
+    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set a custom testing threshold for this model
+    predictor = DefaultPredictor(cfg)
+
     print("Starting...")
-    #serverPort=sys.argv[1]
-    #print("Puerto ", str(serverPort))
     app.run(debug = True,host='0.0.0.0') 
