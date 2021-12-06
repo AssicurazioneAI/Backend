@@ -79,12 +79,14 @@ if __name__ == '__main__':
     cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
     cfg.OUTPUT_DIR = "./output/"
     cfg.DATALOADER.NUM_WORKERS = 1
-    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2  # only has one class (damage) + 1
-    cfg.MODEL.RETINANET.NUM_CLASSES = 2 # only has one class (damage) + 1
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 3
+    cfg.MODEL.RETINANET.NUM_CLASSES = 3
     cfg.MODEL.DEVICE = 'cpu'
     cfg.MODEL.WEIGHTS = "./output/model_final.pth"
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set a custom testing threshold for this model
     predictor = DefaultPredictor(cfg)
+
+
 
     print("Starting...")
     app.run(debug = True,host='0.0.0.0') 
