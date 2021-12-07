@@ -6,16 +6,16 @@ It is written in Python, using [the Flask web framework][flask].
 
 The source code is contained in the `sv.py` module.
 
-### Luncher
+## Luncher
 
-*Build docker image
+### Build docker image
 
 docker build -f .\Dockerfile . 
 
-*Check image ID
+### Check image ID
 
 docker image ls
 
-*Create and start the container
+### Create and start the container
 
 docker run -d -p 5000:5000 [imageID] or docker run -p 5000:5000 [imageID]
