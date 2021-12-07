@@ -26,7 +26,7 @@ app = Flask(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
 cors = CORS(app, resources={r"/receiveImage": {"origins": "*"}})
 
-@app.route('/recibeImagen', methods = ['POST']) 
+@app.route('/recibeImagen', methods = ['GET']) 
 @cross_origin(origin='localhost',headers=['Content-Type'])
 def receiveImage():     
 
