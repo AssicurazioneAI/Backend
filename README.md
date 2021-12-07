@@ -9,10 +9,13 @@ The source code is contained in the `sv.py` module.
 ### Luncher
 
 *Build docker image
+
 docker build -f .\Dockerfile . 
 
 *Check image ID
+
 docker image ls
 
 *Create and start the container
+
 docker run -d -p 5000:5000 [imageID] or docker run -p 5000:5000 [imageID]
